@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AnimalService } from '../../services/animal-service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-animal-component',
@@ -9,7 +10,10 @@ import { AnimalService } from '../../services/animal-service';
 })
 export class AnimalComponent {
   animalList: any = [];
-  constructor(private animalService: AnimalService) { }
+  constructor(
+    private animalService: AnimalService,
+    private toastr: ToastrService
+  ) { }
   getAllAnimals() {
     this.animalService.getAllAnimalsData().subscribe((data: {}) => {
       this.animalList = data;
