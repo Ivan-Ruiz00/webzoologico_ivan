@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { AnimalService } from '../../services/animal-service';
 import { ToastrService } from 'ngx-toastr';
 import { take } from 'rxjs';
+import { Router } from '@angular/router';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-animal-component',
@@ -11,9 +13,12 @@ import { take } from 'rxjs';
 })
 export class AnimalComponent {
   animalList: any = [];
+  animalForm: FormGroup | any;
   constructor(
     private animalService: AnimalService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private router: Router,
+    private formBuilder: FormBuilder
   ) { }
   getAllAnimals() {
     this.animalService.getAllAnimalsData().subscribe((data: {}) => {
@@ -21,6 +26,11 @@ export class AnimalComponent {
     });
   }
   ngOnInit() {
+    this.animalForm = this.formBuilder.group({
+      nombre: '',
+      edad: 0,
+      tipo: ''
+    })
     this.getAllAnimals();
   }
   newMessage(messageText: string) {
