@@ -39,4 +39,15 @@ export class AnimalComponent {
       .pipe(take(1))
       .subscribe(() => window.location.reload());
   }
+  newAnimalEntry() {
+    this.animalService.newAnimal(this.animalForm.value).subscribe(
+      () => {
+        //Redirigiendo a la ruta actual /inicio y recargando la ventana
+        this.router.navigate(['/animales'])
+        .then(()=> {
+          this.newMessage('Registro exitoso');
+        })
+      }
+    );
+  }
 }
