@@ -3,17 +3,20 @@ import { AnimalService } from '../../services/animal-service';
 import { ToastrService } from 'ngx-toastr';
 import { take } from 'rxjs';
 import { Router } from '@angular/router';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-animal-component',
-  imports: [],
+  imports: [CommonModule, ReactiveFormsModule, CommonModule],
   templateUrl: './animal-component.html',
   styleUrl: './animal-component.css',
 })
 export class AnimalComponent {
   animalList: any = [];
   animalForm: FormGroup | any;
+  idAnimal: any;
+  editableAnimal: boolean = false;
   constructor(
     private animalService: AnimalService,
     private toastr: ToastrService,
@@ -25,11 +28,37 @@ export class AnimalComponent {
       this.animalList = data;
     });
   }
+  toggleEditAnimal(id: any) {
+    this.idAnimal = id;
+    console.log(this.idAnimal);
+    this.animalService.getOneAnimal(id).subscribe(
+      data => {
+        this.animalForm.setValue({
+          nombre: data.nombre,
+          edad: data.edad,
+          tipo: data.tipo,
+          fecha: data.fecha
+        });
+      }
+    );
+    console.log(this.animalService.getOneAnimal(id).subscribe(
+      data => {
+        this.animalForm.setValue({
+          nombre: data.nombre,
+          edad: data.edad,
+          tipo: data.tipo,
+          fecha: data.fecha
+        });
+      }
+    ));
+    this.editableAnimal = !this.editableAnimal;
+  }
   ngOnInit() {
     this.animalForm = this.formBuilder.group({
       nombre: '',
       edad: 0,
-      tipo: ''
+      tipo: '',
+      fecha: ''
     })
     this.getAllAnimals();
   }
@@ -44,9 +73,23 @@ export class AnimalComponent {
       () => {
         //Redirigiendo a la ruta actual /inicio y recargando la ventana
         this.router.navigate(['/animales'])
-        .then(()=> {
-          this.newMessage('Registro exitoso');
-        })
+          .then(() => {
+            this.newMessage('Registro exitoso');
+          })
+      }
+    );
+  }
+  updateAnimalEntry() {
+    //Removiendo valores vacios del formulario de actualización
+    for (let key in this.animalForm.value) {
+      if (this.animalForm.value[key] === '') {
+        this.animalForm.removeControl(key);
+      }
+    }
+    this.animalService.updateAnimal(this.idAnimal, this.animalForm.value).subscribe(
+      () => {
+        //Enviando mensaje de confirmación
+        this.newMessage("Animal editado");
       }
     );
   }
